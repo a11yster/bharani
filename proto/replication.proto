@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package replication;
+
+option go_package = "bharani/proto/replication";
+
+// ReplicationTable service for mapping volumes to OSDs
+service ReplicationTableService {
+  rpc CreateVolume(CreateVolumeRequest) returns (CreateVolumeResponse);
+  rpc GetVolume(GetVolumeRequest) returns (GetVolumeResponse);
+  rpc UpdateVolume(UpdateVolumeRequest) returns (UpdateVolumeResponse);
+  rpc ListVolumes(ListVolumesRequest) returns (ListVolumesResponse);
+}
+
+message CreateVolumeRequest {
+  string volume_id = 1;
+  repeated string osd_addresses = 2;
+  string cell_id = 3;
+}
+
+message CreateVolumeResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message GetVolumeRequest {
+  string volume_id = 1;
+}
+
+message GetVolumeResponse {
+  bool found = 1;
+  string volume_id = 2;
+  repeated string osd_addresses = 3;
+  int64 generation = 4;
+  string cell_id = 5;
+  string state = 6; // "open" or "closed"
+  string error = 7;
+}
+
+message UpdateVolumeRequest {
+  string volume_id = 1;
+  repeated string osd_addresses = 2;
+  int64 generation = 3;
+  string state = 4; // optional, "open" or "closed"
+}
+
+message UpdateVolumeResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message ListVolumesRequest {
+  string cell_id = 1; // optional filter
+}
+
+message ListVolumesResponse {
+  repeated string volume_ids = 1;
+}
+
+

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package osd;
+
+option go_package = "bharani/proto/osd";
+
+// OSD service for storing and retrieving blocks
+service OSDService {
+  rpc PutBlock(PutBlockRequest) returns (PutBlockResponse);
+  rpc GetBlock(GetBlockRequest) returns (GetBlockResponse);
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message PutBlockRequest {
+  string hash = 1;
+  bytes data = 2;
+  string bucket_id = 3;
+  string volume_id = 4;
+}
+
+message PutBlockResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message GetBlockRequest {
+  string hash = 1;
+  string bucket_id = 2;
+  string volume_id = 3;
+}
+
+message GetBlockResponse {
+  bool success = 1;
+  bytes data = 2;
+  string error = 3;
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  bool healthy = 1;
+  string status = 2;
+}
+
+

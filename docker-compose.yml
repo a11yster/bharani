@@ -1,0 +1,157 @@
+version: "3.8"
+
+services:
+  blockindex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["./bin/blockindex", "-port", "9091", "-db", "/data/blockindex.db"]
+    ports:
+      - "9091:9091"
+    volumes:
+      - blockindex-data:/data
+    networks:
+      - bharani-network
+
+  replication:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      ["./bin/replication", "-port", "9092", "-db", "/data/replication.db"]
+    ports:
+      - "9092:9092"
+    volumes:
+      - replication-data:/data
+    networks:
+      - bharani-network
+
+  master:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      [
+        "./bin/master",
+        "-port",
+        "9093",
+        "-cell",
+        "cell1",
+        "-replication",
+        "replication:9092",
+      ]
+    ports:
+      - "9093:9093"
+    depends_on:
+      - replication
+    networks:
+      - bharani-network
+
+  osd1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      [
+        "./bin/osd",
+        "-port",
+        "9090",
+        "-address",
+        "osd1:9090",
+        "-cell",
+        "cell1",
+        "-data-dir",
+        "/data",
+      ]
+    ports:
+      - "9090:9090"
+    volumes:
+      - osd1-data:/data
+    networks:
+      - bharani-network
+
+  osd2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      [
+        "./bin/osd",
+        "-port",
+        "9095",
+        "-address",
+        "osd2:9095",
+        "-cell",
+        "cell1",
+        "-data-dir",
+        "/data",
+      ]
+    ports:
+      - "9095:9095"
+    volumes:
+      - osd2-data:/data
+    networks:
+      - bharani-network
+
+  osd3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      [
+        "./bin/osd",
+        "-port",
+        "9096",
+        "-address",
+        "osd3:9096",
+        "-cell",
+        "cell1",
+        "-data-dir",
+        "/data",
+      ]
+    ports:
+      - "9096:9096"
+    volumes:
+      - osd3-data:/data
+    networks:
+      - bharani-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      [
+        "./bin/frontend",
+        "-port",
+        "8080",
+        "-blockindex",
+        "blockindex:9091",
+        "-replication",
+        "replication:9092",
+        "-master",
+        "master:9093",
+      ]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - blockindex
+      - replication
+      - master
+      - osd1
+      - osd2
+      - osd3
+    networks:
+      - bharani-network
+
+networks:
+  bharani-network:
+    driver: bridge
+
+volumes:
+  blockindex-data:
+  replication-data:
+  osd1-data:
+  osd2-data:
+  osd3-data:
+

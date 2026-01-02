@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package blockindex;
+
+option go_package = "bharani/proto/blockindex";
+
+// BlockIndex service for mapping block hashes to storage locations
+service BlockIndexService {
+  rpc PutEntry(PutEntryRequest) returns (PutEntryResponse);
+  rpc GetEntry(GetEntryRequest) returns (GetEntryResponse);
+  rpc Exists(ExistsRequest) returns (ExistsResponse);
+}
+
+message PutEntryRequest {
+  string hash = 1;
+  string cell_id = 2;
+  string bucket_id = 3;
+  string checksum = 4;
+}
+
+message PutEntryResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message GetEntryRequest {
+  string hash = 1;
+}
+
+message GetEntryResponse {
+  bool found = 1;
+  string cell_id = 2;
+  string bucket_id = 3;
+  string checksum = 4;
+  string error = 5;
+}
+
+message ExistsRequest {
+  string hash = 1;
+}
+
+message ExistsResponse {
+  bool exists = 1;
+}
+
+

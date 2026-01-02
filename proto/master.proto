@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package master;
+
+option go_package = "bharani/proto/master";
+
+// Master service for coordinating repairs and volume management
+service MasterService {
+  rpc RegisterOSD(RegisterOSDRequest) returns (RegisterOSDResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc GetOpenVolumes(GetOpenVolumesRequest) returns (GetOpenVolumesResponse);
+  rpc CloseVolume(CloseVolumeRequest) returns (CloseVolumeResponse);
+  rpc TriggerRepair(TriggerRepairRequest) returns (TriggerRepairResponse);
+}
+
+message RegisterOSDRequest {
+  string osd_address = 1;
+  string cell_id = 2;
+  int64 available_space = 3;
+}
+
+message RegisterOSDResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message HeartbeatRequest {
+  string osd_address = 1;
+  bool healthy = 2;
+  int64 available_space = 3;
+}
+
+message HeartbeatResponse {
+  bool success = 1;
+}
+
+message GetOpenVolumesRequest {
+  string cell_id = 1;
+}
+
+message GetOpenVolumesResponse {
+  repeated string volume_ids = 1;
+}
+
+message CloseVolumeRequest {
+  string volume_id = 1;
+}
+
+message CloseVolumeResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message TriggerRepairRequest {
+  string failed_osd_address = 1;
+}
+
+message TriggerRepairResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+

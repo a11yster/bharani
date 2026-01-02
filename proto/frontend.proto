@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package frontend;
+
+option go_package = "bharani/proto/frontend";
+
+// Frontend service for client-facing API
+service FrontendService {
+  rpc Put(PutRequest) returns (PutResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+}
+
+message PutRequest {
+  bytes data = 1;
+}
+
+message PutResponse {
+  bool success = 1;
+  string hash = 2;
+  string error = 3;
+}
+
+message GetRequest {
+  string hash = 1;
+}
+
+message GetResponse {
+  bool success = 1;
+  bytes data = 2;
+  string error = 3;
+}
+
+
